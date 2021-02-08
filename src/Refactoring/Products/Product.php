@@ -5,8 +5,10 @@ namespace Refactoring\Products;
 use Brick\Math\BigDecimal;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use Refactoring\Products\Price as Price;
+use Refactoring\Products\Counter as Counter;
 
-class Product
+final class Product
 {
     /**
      * @var UuidInterface
@@ -40,10 +42,10 @@ class Product
      * @param string|null $longDesc
      * @param int|null $counter
      */
-    public function __construct(?BigDecimal $price, ?string $desc, ?string $longDesc, ?int $counter)
+    public function __construct(BigDecimal $price, string $desc, string $longDesc, Counter $counter)
     {
         $this->serialNumber = Uuid::uuid4();
-        $this->price = $price;
+        $this->price = new Price($price);
         $this->desc = $desc;
         $this->longDesc = $longDesc;
         $this->counter = $counter;
@@ -58,35 +60,83 @@ class Product
     }
 
     /**
-     * @return BigDecimal
+     * @param $number
      */
-    public function getPrice(): BigDecimal
+    public function setSerialNumber($number)
+    {
+        $this->serialNumber = $number;
+    }
+
+    /**
+     * @return null|\Refactoring\Products\BigDecimal
+     */
+    public function getPrice()
     {
         return $this->price;
     }
 
     /**
+     * @return \Refactoring\Products\BigDecimal
+     */
+    public function getPriceValue()
+    {
+        return $this->price->getValue();
+    }
+
+    /**
+     * @param $price
+     */
+    public function setPrice($price)
+    {
+        $this->price->setValue($price);
+    }
+
+    /**
      * @return string
      */
-    public function getDesc(): string
+    public function getDesc()
     {
         return $this->desc;
     }
 
     /**
+     * @param string $desc
+     */
+    public function setDesc(string $desc)
+    {
+        $this->desc = $desc;
+    }
+
+    /**
      * @return string
      */
-    public function getLongDesc(): string
+    public function getLongDesc()
     {
         return $this->longDesc;
     }
 
     /**
+     * @param string $longDesc
+     */
+    public function setLongDesc(string $longDesc)
+    {
+        $this->longDesc = $longDesc;
+    }
+
+    /**
      * @return int
      */
-    public function getCounter(): int
+    public function getCounter()
     {
         return $this->counter;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCounterValue()
+    {
+       return  $this->counter->getValue();
     }
 
     /**
@@ -94,19 +144,11 @@ class Product
      */
     public function decrementCounter(): void
     {
-        if ($this->price != null && $this->price->getSign() > 0) {
-            if ($this->counter === null) {
-                throw new \Exception("null counter");
-            }
-
-            $this->counter = $this->counter - 1;
-
-            if ($this->counter < 0) {
-                throw new \Exception("Negative counter");
-            }
+        $price = $this->getPrice();
+        if (!is_null($price->getValue()) && $price->getSign() > 0) {
+             $this->getCounter()->decrement();
         } else {
             throw new \Exception("Invalid price");
-
         }
     }
 
@@ -115,16 +157,9 @@ class Product
      */
     public function incrementCounter(): void
     {
-        if ($this->price != null && $this->price->getSign() > 0) {
-            if ($this->counter === null) {
-                throw new \Exception("null counter");
-            }
-
-            if ($this->counter + 1 < 0) {
-                throw new \Exception("Negative counter");
-            }
-
-            $this->counter = $this->counter + 1;
+        $price = $this->getPrice();
+        if (!is_null($price->getValue()) && $price->getSign() > 0) {
+            $this->getCounter()->increment();
         } else {
             throw new \Exception("Invalid price");
         }
@@ -136,16 +171,17 @@ class Product
      */
     public function changePriceTo(?BigDecimal $newPrice): void
     {
-        if ($this->counter === null) {
+        if ($newPrice === null) {
+            throw new \Exception("new price null");
+        }
+
+        $counterVal = $this->getCounterValue();
+        if ($counterVal === null) {
             throw new \Exception("null counter");
         }
 
-        if ($this->counter > 0) {
-            if ($newPrice === null) {
-                throw new \Exception("new price null");
-            }
-
-            $this->price = $newPrice;
+        if ($counterVal > 0) {
+            $this->setPrice($newPrice);
         }
     }
 
@@ -156,23 +192,30 @@ class Product
      */
     public function replaceCharFromDesc(?string $charToReplace, ?string $replaceWith): void
     {
-        if ($this->longDesc === null || empty($this->longDesc) || $this->desc === null || empty($this->desc)) {
+        $desc = $this->getDesc();
+        $longDesc = $this->getLongDesc();
+
+        if ($longDesc === null || $longDesc == "" || $desc === null || $desc == "") {
             throw new \Exception("null or empty desc");
         }
 
-        $this->longDesc = str_replace($charToReplace, $replaceWith, $this->longDesc);
-        $this->desc = str_replace($charToReplace, $replaceWith, $this->desc);
+        $this->setDesc(str_replace($charToReplace, $replaceWith, $desc));
+        $this->setLongDesc(str_replace($charToReplace, $replaceWith, $longDesc));
     }
 
     /**
      * @return string
      */
     public function formatDesc(): string {
-        if ($this->longDesc === null || empty($this->longDesc) || $this->desc === null || empty($this->desc)) {
+        $desc = $this->getDesc();
+        $longDesc = $this->getLongDesc();
+
+        if ($longDesc === null || $longDesc == "" || $desc === null || $desc == "") {
+
             return "";
         }
 
-        return $this->desc . " *** " . $this->longDesc;
+        return sprintf("%s *** %s", $desc, $longDesc);
     }
 }
 

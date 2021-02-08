@@ -1,0 +1,6 @@
+1. Potworze nowe obiekty aby 'odciazyc' klase 'Product' od zbednych odpowiedzialnosci i przerzucic je na klasy ktorych beda dotyczyc bezposrednio.
+2. Utworze i zaimplementuje interfejs ktory bedzie definiowac obowiazkowe metody jakie musi zawierac klasa Product.
+3. Wykorzystam depedency injection i w konstruktorze podajam obiekty do odpowiednich pol klasy 'Product'.
+4. Ulatwie dostep do odpowiednich obiektow oraz ich zmiane ich stanu w polach klasy przez utworzenie odpowiednich metod (get/set).
+5. Usune zbedny kod, zmienie kolejnosc.
+6. Skorzystam z funkcji: sprintf oraz gmp_sign.
