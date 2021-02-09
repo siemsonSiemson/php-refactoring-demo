@@ -5,9 +5,22 @@ namespace Tests\Refactoring\Products;
 use Brick\Math\BigDecimal;
 use PHPUnit\Framework\TestCase;
 use Refactoring\Products\Product;
+use Refactoring\Products\Price;
+use Refactoring\Products\Counter;
 
 class ProductTest extends TestCase
 {
+    private $price;
+    private $counter;
+    private $serialNumber;
+
+    protected function setUp():void
+    {
+        $this->serialNumber = Uuid::uuid4();
+        $this->price = new BigDecimal();
+        $this->counter = new Counter();
+    }
+
     /**
      * @test
      */

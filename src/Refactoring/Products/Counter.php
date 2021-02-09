@@ -50,7 +50,7 @@ class Counter
         if ($value < 0) {
             throw new \Exception("Negative counter");
         } else {
-            $this->value -= 1;
+            $this->state -= 1;
         }
     }
 
@@ -67,7 +67,7 @@ class Counter
         if (++$value < 0) {
             throw new \Exception("Negative counter");
         } else {
-            $this->value += 1;
+            $this->state += 1;
         }
     }
 }
