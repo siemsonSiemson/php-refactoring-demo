@@ -8,7 +8,7 @@ use Ramsey\Uuid\UuidInterface;
 use Refactoring\Products\Price as Price;
 use Refactoring\Products\Counter as Counter;
 
-final class Product
+final class Product implements Refactoring\Interfaces\Product
 {
     /**
      * @var UuidInterface

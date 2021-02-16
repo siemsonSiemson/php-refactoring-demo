@@ -10,18 +10,46 @@ namespace Tests\Refactoring\Products;
 
 use Brick\Math\BigDecimal;
 use PHPUnit\Framework\TestCase;
+use Refactoring\Products\Price;
 
 class PriceTest
 {
     private $value;
 
-    protected function setUp():void
+    /**
+     * @test
+     */
+    private function setUp():void
     {
         $this->value = new BigDecimal();
     }
 
-    public function testTypeOfValue():void
+    /**
+     * @test
+     */
+    private function testTypeOfValue():void
     {
         $this->assertInstanceOf('BigDecimal', $this->value);
+    }
+
+    /**
+     * @test
+     */
+    private function testSign():void
+    {
+        //given
+        $price = new Price(BigDecimal::ten());
+        //then
+        $this->assertEquals(intval(1), $price->getSign());
+
+        //given
+        $price = new Price(BigDecimal::of('-788892.667'));
+        //then
+        $this->assertEquals(intval(-1), $price->getSign());
+
+        //given
+        $price = new Price(BigDecimal::zero());
+        //then
+        $this->assertEquals(intval(-1), $price->getSign());
     }
 }
